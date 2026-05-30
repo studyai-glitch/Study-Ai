@@ -128,8 +128,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Model Status</label>
-                    <input type="text" id="settings-model-name" readonly value="deepseek/deepseek-flash:free" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 text-gray-500 outline-none text-sm font-mono cursor-not-allowed">
-                    <p class="text-[11px] text-green-600 mt-1">✓ DeepSeek Flash Free default lock kar diya gaya hai.</p>
+                    <input type="text" id="settings-model-name" readonly value="deepseek/deepseek-flash" class="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 text-gray-500 outline-none text-sm font-mono cursor-not-allowed">
+                    <p class="text-[11px] text-green-600 mt-1">✓ Active DeepSeek Flash ID locked.</p>
                 </div>
             </div>
             <div class="p-4 bg-gray-50 dark:bg-black/20 flex justify-end gap-2">
@@ -142,10 +142,10 @@
     <script>
         let conversations = JSON.parse(localStorage.getItem('study_ai_convos')) || [];
         let currentConvoId = localStorage.getItem('study_ai_current_id') || null;
-        let config = JSON.parse(localStorage.getItem('study_ai_config')) || { apiKey: '', model: 'deepseek/deepseek-flash:free' };
+        let config = JSON.parse(localStorage.getItem('study_ai_config')) || { apiKey: '', model: 'deepseek/deepseek-flash' };
 
-        // Always force the correct model string to avoid dot errors
-        config.model = 'deepseek/deepseek-flash:free';
+        // Force correct endpoint mapping
+        config.model = 'deepseek/deepseek-flash';
         localStorage.setItem('study_ai_config', JSON.stringify(config));
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -274,7 +274,7 @@
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${config.apiKey.trim()}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ model: "deepseek/deepseek-flash:free", messages: convo.messages.map(m => ({ role: m.role, content: m.content })) })
+                    body: JSON.stringify({ model: "deepseek/deepseek-flash", messages: convo.messages.map(m => ({ role: m.role, content: m.content })) })
                 });
                 const data = await response.json();
                 loaderWrapper.remove();
