@@ -26,7 +26,6 @@
         }
     </script>
     <style>
-        /* Custom Gradients and Utilities */
         .gradient-text {
             background: linear-gradient(90deg, #4b90ff, #ff5546);
             -webkit-background-clip: text;
@@ -35,13 +34,10 @@
         .logo-gradient {
             background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
         }
-        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #334155; }
-        
-        /* Hide element utility */
         .hidden-view { display: none !important; }
     </style>
 </head>
@@ -49,6 +45,7 @@
 
     <aside id="sidebar" class="w-72 bg-[#f0f4f9] dark:bg-darkSidebar h-full flex flex-col transition-all duration-300 z-20 absolute md:relative -translate-x-full md:translate-x-0">
         <div class="p-4 flex items-center justify-between">
+            <span class="font-semibold text-lg px-2 gradient-text">Study Ai Menu</span>
             <button id="closeSidebarBtn" class="md:hidden p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
                 <span class="material-symbols-outlined">menu_open</span>
             </button>
@@ -63,8 +60,7 @@
 
         <div class="flex-1 overflow-y-auto px-4">
             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 px-2">Recent</p>
-            <ul id="chatHistoryList" class="space-y-1">
-                </ul>
+            <ul id="chatHistoryList" class="space-y-1"></ul>
         </div>
 
         <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-1">
@@ -80,14 +76,15 @@
     </aside>
 
     <main class="flex-1 flex flex-col h-full relative w-full">
-        <header class="p-4 flex items-center justify-between md:hidden absolute top-0 left-0 right-0 z-10 bg-white/80 dark:bg-darkBg/80 backdrop-blur-sm">
-            <button id="openSidebarBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+        <header class="p-4 flex items-center justify-between bg-white dark:bg-darkBg border-b border-gray-100 dark:border-gray-800">
+            <button id="openSidebarBtn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 mr-3">
                 <span class="material-symbols-outlined">menu</span>
             </button>
-            <span class="font-medium text-lg gradient-text">Study Ai</span>
-            <div class="w-8"></div> </header>
+            <span class="font-medium text-xl gradient-text">Study Ai</span>
+            <div class="w-8 md:hidden"></div>
+        </header>
 
-        <div id="welcomeView" class="flex-1 flex flex-col items-center justify-center p-6 mt-12 md:mt-0">
+        <div id="welcomeView" class="flex-1 flex flex-col items-center justify-center p-6">
             <div class="w-16 h-16 logo-gradient rounded-2xl shadow-lg mb-6 flex items-center justify-center">
                 <span class="material-symbols-outlined text-white text-3xl">school</span>
             </div>
@@ -95,8 +92,7 @@
             <p class="text-gray-500 dark:text-gray-400 text-lg text-center font-light">How can I help you today?</p>
         </div>
 
-        <div id="chatView" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 hidden-view mt-12 md:mt-0 scroll-smooth pb-32">
-            </div>
+        <div id="chatView" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 hidden-view scroll-smooth pb-32"></div>
 
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent dark:from-darkBg dark:via-darkBg pt-10">
             <div class="max-w-4xl mx-auto relative">
@@ -116,7 +112,7 @@
     </main>
 
     <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-        <div class="bg-white dark:bg-[#1e1f20] rounded-2xl p-6 w-full max-w-md shadow-2xl transform transition-all border border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-[#1e1f20] rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center mb-5">
                 <h2 class="text-xl font-semibold">Settings</h2>
                 <button onclick="toggleSettings()" class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
@@ -131,8 +127,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Model Name</label>
-                    <input type="text" id="modelInput" placeholder="google/gemini-pro" value="google/gemini-2.5-pro" class="w-full bg-gray-50 dark:bg-[#131314] border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 text-sm">
-                    <p class="text-xs text-gray-500 mt-1">Default: google/gemini-2.5-pro</p>
+                    <input type="text" id="modelInput" placeholder="google/gemini-2.5-flash:free" class="w-full bg-gray-50 dark:bg-[#131314] border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 text-sm">
+                    <p class="text-xs text-gray-500 mt-1">Sahi copy karein: <br>• google/gemini-2.5-flash:free <br>• deepseek/deepseek-r1:free</p>
                 </div>
             </div>
             
@@ -144,7 +140,10 @@
     </div>
 
     <script>
-        // DOM Elements
+        let chats = JSON.parse(localStorage.getItem('studyAiChats')) || [];
+        let currentChatId = null;
+        let config = JSON.parse(localStorage.getItem('studyAiConfig')) || { apiKey: '', model: 'google/gemini-2.5-flash:free' };
+
         const welcomeView = document.getElementById('welcomeView');
         const chatView = document.getElementById('chatView');
         const chatForm = document.getElementById('chatForm');
@@ -153,45 +152,24 @@
         const chatHistoryList = document.getElementById('chatHistoryList');
         const sidebar = document.getElementById('sidebar');
         const settingsModal = document.getElementById('settingsModal');
-        
-        // State
-        let chats = JSON.parse(localStorage.getItem('studyAiChats')) || [];
-        let currentChatId = null;
-        let config = JSON.parse(localStorage.getItem('studyAiConfig')) || {
-            apiKey: '',
-            model: 'google/gemini-2.5-pro'
-        };
 
-        // --- Initialization ---
         function init() {
             renderSidebar();
             checkTheme();
-            
-            // Populate settings inputs
-            document.getElementById('apiKeyInput').value = config.apiKey;
-            document.getElementById('modelInput').value = config.model;
+            document.getElementById('apiKeyInput').value = config.apiKey || '';
+            document.getElementById('modelInput').value = config.model || 'google/gemini-2.5-flash:free';
 
-            // Mobile Sidebar Toggle
-            document.getElementById('openSidebarBtn').addEventListener('click', () => {
-                sidebar.classList.remove('-translate-x-full');
-            });
-            document.getElementById('closeSidebarBtn').addEventListener('click', () => {
-                sidebar.classList.add('-translate-x-full');
-            });
+            document.getElementById('openSidebarBtn').addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
+            document.getElementById('closeSidebarBtn').addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
         }
 
-        // --- Core Functions ---
         function startNewChat() {
             currentChatId = null;
             welcomeView.classList.remove('hidden-view');
             chatView.classList.add('hidden-view');
             chatView.innerHTML = '';
             userInput.value = '';
-            
-            // Close mobile sidebar if open
-            if(window.innerWidth < 768) {
-                sidebar.classList.add('-translate-x-full');
-            }
+            if(window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
         }
 
         function loadChat(chatId) {
@@ -202,19 +180,14 @@
             welcomeView.classList.add('hidden-view');
             chatView.classList.remove('hidden-view');
             chatView.innerHTML = '';
-
-            chat.messages.forEach(msg => appendMessage(msg.role, msg.content, false));
-            
+            chat.messages.forEach(msg => appendMessage(msg.role, msg.content));
             if(window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
             scrollToBottom();
         }
 
         function renderSidebar() {
             chatHistoryList.innerHTML = '';
-            // Sort by newest first
-            const sortedChats = [...chats].reverse();
-            
-            sortedChats.forEach(chat => {
+            [...chats].reverse().forEach(chat => {
                 const li = document.createElement('li');
                 li.className = `px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full cursor-pointer truncate text-sm transition-colors text-gray-700 dark:text-gray-300 flex items-center gap-2`;
                 li.innerHTML = `<span class="material-symbols-outlined text-[16px]">chat_bubble</span> ${chat.title}`;
@@ -223,20 +196,18 @@
             });
         }
 
-        function appendMessage(role, content, animate = true) {
+        function appendMessage(role, content) {
             const msgDiv = document.createElement('div');
             msgDiv.className = 'flex gap-4 max-w-3xl mx-auto w-full';
             
             if (role === 'user') {
                 msgDiv.innerHTML = `
                     <div class="flex-1 flex justify-end">
-                        <div class="bg-[#f0f4f9] dark:bg-[#1e1f20] px-5 py-3 rounded-2xl rounded-tr-sm text-[15px] leading-relaxed max-w-[80%]">
+                        <div class="bg-[#f0f4f9] dark:bg-[#1e1f20] px-5 py-3 rounded-2xl rounded-tr-sm text-[15px] max-w-[80%] break-words">
                             ${escapeHTML(content)}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             } else {
-                // Formatting basic markdown for AI
                 let formattedContent = escapeHTML(content)
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -246,29 +217,25 @@
                     <div class="w-8 h-8 rounded-full logo-gradient flex-shrink-0 flex items-center justify-center mt-1">
                         <span class="material-symbols-outlined text-white text-sm">school</span>
                     </div>
-                    <div class="flex-1 pt-1 text-[15px] leading-relaxed">
+                    <div class="flex-1 pt-1 text-[15px] leading-relaxed break-words">
                         ${formattedContent}
-                    </div>
-                `;
+                    </div>`;
             }
-            
             chatView.appendChild(msgDiv);
             scrollToBottom();
         }
 
-        // --- Chat Submission ---
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = userInput.value.trim();
             if (!text) return;
 
             if (!config.apiKey) {
-                alert("Please add your OpenRouter API Key in Settings first.");
+                alert("Please open Settings and enter a valid OpenRouter API Key.");
                 toggleSettings();
                 return;
             }
 
-            // UI Updates
             userInput.value = '';
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>';
@@ -277,17 +244,14 @@
                 welcomeView.classList.add('hidden-view');
                 chatView.classList.remove('hidden-view');
                 currentChatId = Date.now().toString();
-                chats.push({ id: currentChatId, title: text.substring(0, 30) + '...', messages: [] });
+                chats.push({ id: currentChatId, title: text.substring(0, 25) + '...', messages: [] });
                 renderSidebar();
             }
 
             const currentChat = chats.find(c => c.id === currentChatId);
-            
-            // Add User message
             currentChat.messages.push({ role: 'user', content: text });
             appendMessage('user', text);
 
-            // Add Loading Indicator for AI
             const loadingId = 'loading-' + Date.now();
             const loadingDiv = document.createElement('div');
             loadingDiv.id = loadingId;
@@ -296,50 +260,49 @@
                 <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
                 <div class="flex-1 space-y-2 pt-2">
                     <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                </div>
-            `;
+                </div>`;
             chatView.appendChild(loadingDiv);
             scrollToBottom();
 
-            // Fetch AI Response
             try {
-                // Prepare messages for OpenRouter (system prompt to act as Study Ai)
-                const apiMessages = [
-                    { role: "system", content: "You are Study Ai, an intelligent educational assistant created by Suhel and Saurabh Sir. Be helpful, concise, and friendly." },
-                    ...currentChat.messages.map(m => ({ role: m.role, content: m.content }))
-                ];
-
                 const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${config.apiKey}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${config.apiKey.trim()}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.href, 
+                        'X-Title': 'Study AI'
                     },
                     body: JSON.stringify({
-                        model: config.model || 'google/gemini-2.5-pro',
-                        messages: apiMessages
+                        model: config.model.trim() || 'google/gemini-2.5-flash:free',
+                        messages: [
+                            { role: "system", content: "You are Study Ai, a helpful educational assistant created by Suhel and Saurabh Sir." },
+                            ...currentChat.messages
+                        ]
                     })
                 });
 
                 const data = await response.json();
                 
-                // Remove loading
-                document.getElementById(loadingId).remove();
+                const loader = document.getElementById(loadingId);
+                if (loader) loader.remove();
 
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    const aiContent = data.choices[0].message.content;
+                // Safe parsing layer for OpenRouter response
+                if (data.choices && data.choices.length > 0 && data.choices[0].message) {
+                    const aiContent = data.choices[0].message.content || "Empty content response received.";
                     currentChat.messages.push({ role: 'assistant', content: aiContent });
                     appendMessage('assistant', aiContent);
-                    saveData();
+                    localStorage.setItem('studyAiChats', JSON.stringify(chats));
+                } else if (data.error) {
+                    throw new Error(`[API Error Code ${data.error.code}]: ${data.error.message}`);
                 } else {
-                    throw new Error("Invalid API response");
+                    throw new Error("Raw Server response parsed successfully, but message field was empty.");
                 }
-
             } catch (error) {
-                console.error("API Error:", error);
-                document.getElementById(loadingId).remove();
-                appendMessage('assistant', "Sorry, I encountered an error. Please check your API key and connection.");
+                console.error(error);
+                const loader = document.getElementById(loadingId);
+                if (loader) loader.remove();
+                appendMessage('assistant', `⚠️ **System Alert**: ${error.message}. Is technical issue ko fix karne ke liye check karein ki aapka API key active hai ya nahi.`);
             } finally {
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">send</span>';
@@ -347,31 +310,18 @@
             }
         });
 
-        // --- Utilities ---
         function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, tag => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-            }[tag]));
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
         }
-
-        function scrollToBottom() {
-            chatView.scrollTop = chatView.scrollHeight;
-        }
-
-        function saveData() {
-            localStorage.setItem('studyAiChats', JSON.stringify(chats));
-        }
-
-        // --- Settings & Theme ---
-        function toggleSettings() {
-            settingsModal.classList.toggle('hidden');
-        }
-
+        function scrollToBottom() { chatView.scrollTop = chatView.scrollHeight; }
+        function toggleSettings() { settingsModal.classList.toggle('hidden'); }
+        
         function saveSettings() {
             config.apiKey = document.getElementById('apiKeyInput').value.trim();
-            config.model = document.getElementById('modelInput').value.trim() || 'google/gemini-2.5-pro';
+            config.model = document.getElementById('modelInput').value.trim();
             localStorage.setItem('studyAiConfig', JSON.stringify(config));
             toggleSettings();
+            alert("Settings safely updated inside browser cache! Sending a fresh test prompt now.");
         }
 
         function toggleDarkMode() {
@@ -383,15 +333,9 @@
 
         function checkTheme() {
             const storedTheme = localStorage.getItem('studyAiTheme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
-                document.documentElement.classList.add('dark');
-                updateThemeUI(true);
-            } else {
-                document.documentElement.classList.remove('dark');
-                updateThemeUI(false);
-            }
+            const isDark = storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.classList.toggle('dark', isDark);
+            updateThemeUI(isDark);
         }
 
         function updateThemeUI(isDark) {
@@ -399,7 +343,6 @@
             document.getElementById('themeText').textContent = isDark ? 'Light Mode' : 'Dark Mode';
         }
 
-        // Run Init
         init();
     </script>
 </body>
